@@ -1,5 +1,5 @@
 # BismiAllahirRahmaanirRaheem
-import re, os, time
+import re, os, time, pickle
 from pprint import pprint
 
 def fetchCollection():
@@ -7,13 +7,13 @@ def fetchCollection():
     docId = {}
     index = {}
     stats = {}
-    path = 'F:\hesh.@\\6th semester\I.R\Assignment-1\ShortStories'
+    path = 'ShortStories'
     collecCount = 0
     tokenCount = 0
 
     for filename in os.listdir(path):
         size = 0
-        collecFile = open(os.path.join('F:\hesh.@\\6th semester\I.R\Assignment-1\ShortStories',filename), 'r')
+        collecFile = open(os.path.join('ShortStories',filename), 'r')
         story = collecFile.readline()
         author = collecFile.readline()
         author = author.replace('by','')
@@ -44,20 +44,26 @@ def fetchCollection():
 if __name__ == '__main__':
 
     print("\n------------Ad-Hoc Retrieval via Positional Index-----------\n\n ***Statistics about Collection***")
+    if not os.path.exists('positional.pickle'):
+        start = time.clock()
+        index, T, stats = fetchCollection()
+        print("Index established in: %.3f seconds" % (time.clock() - start))
+        out = open("positional.pickle", "wb")
+        pickle.dump(index, out)
+        out.close()
+        print('Tokens in Collection (T):', T)
+        print('Applying HEAP\'s Law with k = 34 and b = 0.49,\nwe get M ~ ', int(34.0 * (T ** 0.49)))
+        print('Actual terms in Collection (M):', len(index.keys()))
+        # print(stats)
+        print('Smallest document w.r.t No. of tokens: ', min(stats, key=stats.get),
+              '\nLargest document w.r.t No. of tokens: ', max(stats, key=stats.get),
+              '\nAverage No. of tokens per Document', sum(stats.values()) / 50)
+    else:
+        start = time.clock()
+        fetch = open("positional.pickle", "rb")
+        index = pickle.load(fetch)
+        print("Index loaded from index dump file in: %.3f seconds" % (time.clock() - start))
 
-    start = time.clock()
-    index, T, stats = fetchCollection()
-    print("Index established in: %.3f seconds" % (time.clock() - start))
-    out = open("dict.pickle", "wb")
-    pickle.dump(index, out)
-    out.close()
-    print('Tokens in Collection (T):', T)
-    print('Applying HEAP\'s Law with k = 34 and b = 0.49,\nwe get M ~ ', int(34.0 * (T ** 0.49)))
-    print('Actual terms in Collection (M):', len(index.keys()))
-    # print(stats)
-    print('Smallest document w.r.t No. of tokens: ', min(stats, key=stats.get),
-          '\nLargest document w.r.t No. of tokens: ', max(stats, key=stats.get),
-          '\nAverage No. of tokens per Document', sum(stats.values()) / 50)
     print('\n(Kindly abide by following query format)\n *Supported Query format:\n - Proximity '
           'Query:\n   x y /k\n - Phrase Query:\n   x y\n   x y z ')
     answer = []
@@ -81,7 +87,7 @@ if __name__ == '__main__':
 
                 if int(choice) == 1:
                     start = time.clock()
-                    if len(qToken) == 3:
+                    if len(qToken) == 3 and str.isdigit(qToken[2]):
                         docs = (sorted(set(index[qToken[0]]) & set(index[qToken[1]]), key=int))
                         # print(docs)
 
@@ -131,6 +137,6 @@ if __name__ == '__main__':
             except KeyError:
                 print('Key Error raised')
 
-    print(len(answer), ' Docs. retrieved in %.2f milliseconds' % ((time.clock() - start) * 1000))
-    print('Matched documents are: ', answer)
+        print(len(answer), ' Docs. retrieved in %.2f milliseconds' % ((time.clock() - start) * 1000))
+        print('Matched documents are: ', answer)
 

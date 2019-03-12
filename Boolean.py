@@ -7,12 +7,12 @@ def fetchCollection():
     docId = {}
     index = {}
     stats = {}
-    path = 'F:\hesh.@\\6th semester\I.R\Assignment-1\ShortStories'
+    path = 'ShortStories'
     tokenCount = 0
     collecCount = 0
 
     for filename in os.listdir(path):
-        collecFile = open(os.path.join('F:\hesh.@\\6th semester\I.R\Assignment-1\ShortStories',filename), 'r')
+        collecFile = open(os.path.join('ShortStories',filename), 'r')
         story = collecFile.readline()
         author = collecFile.readline()
         author = author.replace('by','')
@@ -38,22 +38,33 @@ def fetchCollection():
     index = dict(sorted(index.items()))
     return index,collecCount,stats
 
+
 if __name__ == '__main__':
+
 
     print("\n------------Ad-Hoc Retrieval via Inverted Index-----------\n\n ***Statistics about Collection***")
 
-    start = time.clock()
-    index, T, stats = fetchCollection()
-    print("Index established in: %.3f seconds"%(time.clock()-start))
-    # writing dictionary to a file
-    out = open("dict.pickle", "wb")
-    pickle.dump(index, out)
-    out.close()
-    print('Tokens in Collection (T):', T)
-    print('Applying HEAP\'s Law with k = 34 and b = 0.49,\nwe get M ~ ', int(34.0*(T**0.49)))
-    print('Actual terms in Collection (M):',len(index.keys()))
-    print('Smallest document w.r.t No. of terms: ',min(stats,key=stats.get),'\nLargest document w.r.t No. of terms: ',max(stats,key=stats.get),
-          '\nAverage No. of terms per Document',sum(stats.values())/50)
+    if not os.path.exists('inverted.pickle'):
+        start = time.clock()
+        index, T, stats = fetchCollection()
+        print("Index established from collection in: %.3f seconds"%(time.clock()-start))
+        # writing dictionary to a file
+        out = open("inverted.pickle", "wb")
+        pickle.dump(index, out)
+        out.close()
+        print('Tokens in Collection (T):', T)
+        print('Applying HEAP\'s Law with k = 34 and b = 0.49,\nwe get M ~ ', int(34.0 * (T ** 0.49)))
+        print('Actual terms in Collection (M):', len(index.keys()))
+        print('Smallest document w.r.t No. of terms: ', min(stats, key=stats.get),
+              '\nLargest document w.r.t No. of terms: ', max(stats, key=stats.get),
+              '\nAverage No. of terms per Document', sum(stats.values()) / 50)
+
+    else:
+        start = time.clock()
+        fetch = open("inverted.pickle", "rb")
+        index = pickle.load(fetch)
+        print("Index loaded from index dump file in: %.3f seconds" % (time.clock() - start))
+
     print('\nEnter your Query term: (Kindly abide by following query format)\n *Supported Query format:\n - x\n - x OR y\n '
           '- x AND y\n - x OR y OR z\n - x OR y AND z\n - x AND y OR z\n - x AND y AND z\n(exit to end program)')
 
