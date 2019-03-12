@@ -41,8 +41,8 @@ def fetchCollection():
 
 if __name__ == '__main__':
 
-
-    print("\n------------Ad-Hoc Retrieval via Inverted Index-----------\n\n ***Statistics about Collection***")
+    print("\n------------Ad-Hoc Retrieval via Inverted Index-----------\n(Assumptions: Pre-processing removes all "
+    "punctuation marks, stop words, repeated words & split the words like drawing-room into drawing & room)\n\n ***Statistics about Collection***")
 
     if not os.path.exists('inverted.pickle'):
         start = time.clock()

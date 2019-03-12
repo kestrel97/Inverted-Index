@@ -43,7 +43,9 @@ def fetchCollection():
 
 if __name__ == '__main__':
 
-    print("\n------------Ad-Hoc Retrieval via Positional Index-----------\n\n ***Statistics about Collection***")
+    print("\n------------Ad-Hoc Retrieval via Positional Index-----------\n(Assumptions: Pre-processing removes all "
+    "but only punctuation marks & split the words like drawing-room into drawing & room)\n\n ***Statistics about Collection***")
+
     if not os.path.exists('positional.pickle'):
         start = time.clock()
         index, T, stats = fetchCollection()
